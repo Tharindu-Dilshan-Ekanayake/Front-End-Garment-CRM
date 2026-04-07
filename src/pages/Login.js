@@ -27,11 +27,11 @@ export default function Login() {
 
         // navigate based on role
         if (role === 'ADMIN') {
-            navigate('/admin-dashboard');
+            navigate('/admin');
         } else if (role === 'MANAGER') {
-            navigate('/manager-dashboard');
+            navigate('/manager');
         } else if (role === 'WORKER') {
-            navigate('/worker-dashboard');
+            navigate('/worker');
         }
     }
     return (
