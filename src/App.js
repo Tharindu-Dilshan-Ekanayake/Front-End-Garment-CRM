@@ -1,19 +1,27 @@
-
-import { Input } from 'postcss';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import InputComponent from './components/InputComponent';
+
+import Login from './pages/Login';
+import AdminDashboard from './pages/adminPages/AdminDashboard';
+import ManagerDashboard from './pages/managerpages/ManagerDashboard';
+import WokerDashboard from './pages/workerPages/WokerDashboard';
 
 function App() {
   return (
     <div className="App">
-      <h1 className='text-red-500 text-xl font'>hello</h1>
-      <div>
-        <InputComponent 
-          label="Username"
-          name="username"
-          placeholder="Enter your username"
-        />
-      </div>
+     
+     
+      
+        <Routes>
+          <Route path='/' element={<Login />} />
+          <Route path='/admin-dashboard' element={<AdminDashboard />} />
+          <Route path='/manager-dashboard' element={<ManagerDashboard />} />
+          <Route path='/worker-dashboard' element={<WokerDashboard />} />
+        </Routes>
+        
+      
+   
+      
     </div>
   );
 }

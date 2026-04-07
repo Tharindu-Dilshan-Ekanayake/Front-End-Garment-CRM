@@ -11,11 +11,11 @@ export default function InputComponent({
   className = '',
 }) {
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className="flex flex-col w-full gap-1 mb-4">
       {label && (
         <label
           htmlFor={name}
-          className="text-sm font-medium text-gray-dark"
+          className="text-sm font-medium text-left text-gray-dark"
         >
           {label}
         </label>
@@ -27,10 +27,10 @@ export default function InputComponent({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`h-10 px-3 rounded border border-gray-light focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue text-gray-dark ${className}`}
+        className={`h-10 px-3 rounded border border-gray-light focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue text-gray-dark ${className}  border-black`}
       />
       {error && (
-        <span className="text-xs text-orange mt-1">{error}</span>
+        <span className="mt-1 text-xs text-orange">{error}</span>
       )}
     </div>
   );
