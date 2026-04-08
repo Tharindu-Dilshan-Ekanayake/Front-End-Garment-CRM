@@ -30,7 +30,9 @@ export default function InputComponent({
         className={`h-10 px-3 rounded border border-gray-light focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue text-gray-dark ${className}  border-black`}
       />
       {error && (
-        <span className="mt-1 text-xs text-orange">{error}</span>
+          <span className="mt-1 text-xs font-medium text-right text-red-500">
+           {error}
+          </span>
       )}
     </div>
   );
