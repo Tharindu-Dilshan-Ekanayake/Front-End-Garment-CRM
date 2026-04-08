@@ -4,14 +4,19 @@ import PrimaryButton from '../PrimaryButton'
 import { useAuthStore } from '../../store/authStore';
 
 export default function AdminNav() {
-    const logout = useAuthStore((state) => state.logout)
+  const { logout, user, role } = useAuthStore();
+  const initial = (user || role || 'U')[0]?.toUpperCase();
   const baseLinkClasses =
     'block px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150'
 
   return (
     <div className="flex flex-col w-64 h-screen text-white bg-gray-900 border-r border-gray-800">
-      <div className="px-4 py-4 text-xl font-bold border-b border-gray-800">
-        Admin Panel
+      <div className="flex flex-col items-center px-4 py-6 border-b border-gray-800">
+        <div className="flex items-center justify-center w-16 h-16 mb-2 text-xl font-semibold text-white bg-blue-600 rounded-full">
+          {initial}
+        </div>
+        <p className="text-sm font-semibold text-white">{role || 'Admin'}</p>
+        <p className="text-xs text-gray-400">Admin Panel</p>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
