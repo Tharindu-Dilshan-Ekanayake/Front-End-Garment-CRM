@@ -31,7 +31,7 @@ export default function Login() {
         } else if (role === 'MANAGER') {
             navigate('/manager');
         } else if (role === 'WORKER') {
-            navigate('/worker');
+            navigate('/worker/production/lead');
         }
     }
     return (
