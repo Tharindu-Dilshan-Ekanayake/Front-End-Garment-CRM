@@ -67,7 +67,8 @@ function App() {
             }
           >
             <Route index element={<WokerDashboard />} />
-            <Route path='production' element={<WorkerProduction />} />
+            <Route path='production/lead' element={<WorkerProduction />} />
+            <Route path='production/member' element={<WorkerProduction />} />
           </Route>
         </Routes>
         

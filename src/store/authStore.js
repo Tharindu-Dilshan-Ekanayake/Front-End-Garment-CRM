@@ -6,12 +6,14 @@ import { jwtDecode } from "jwt-decode";
 const storedToken = localStorage.getItem("token");
 let initialUser = null;
 let initialRole = null;
+let initialUserId = null;
 
 if (storedToken) {
   try {
     const decoded = jwtDecode(storedToken);
     initialRole = decoded.role;
-    initialUser = decoded.sub;
+    initialUser = decoded.sub; // email/identifier for display
+    initialUserId = decoded.userId ?? null;
   } catch (e) {
     // if token is invalid, clear it
     localStorage.removeItem("token");
@@ -21,6 +23,7 @@ if (storedToken) {
 export const useAuthStore = create((set) => ({
   token: storedToken || null,
   user: initialUser,
+  userId: initialUserId,
   role: initialRole,
   loading: false,
   error: null,
@@ -39,14 +42,21 @@ export const useAuthStore = create((set) => ({
       // 🔥 decode token
       const decoded = jwtDecode(token);
 
-      // assume token contains role + email
+      // assume token contains role, email, and numeric userId
       const role = decoded.role;
-      const user = decoded.sub;
+      const user = decoded.sub; // email/identifier for UI
+      const userId = decoded.userId;
+
+      // save numeric user id separately
+      if (userId !== undefined && userId !== null) {
+        localStorage.setItem("userId", String(userId));
+      }
 
       set({
         token,
         role,
         user,
+        userId,
         loading: false
       });
 
@@ -62,6 +72,7 @@ export const useAuthStore = create((set) => ({
 
   logout: () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     set({ token: null, user: null, role: null });
   }
 }));

@@ -3,9 +3,10 @@ import TableCompo from '../../components/TableCompo'
 import { useProductionStore } from '../../store/productionStore'
 import PrimaryButton from '../../components/PrimaryButton';
 import { useUserStore } from '../../store/userStore';
+import { toast } from 'react-hot-toast';
 
 export default function ManagerProduction() {
-  const { productions, selectedProduction, fetchProductions, fetchProductionById, detailLoading, createProduction } = useProductionStore();
+  const { productions, selectedProduction, fetchProductions, fetchProductionById, detailLoading, createProduction, patchProduction } = useProductionStore();
   const { workers, fetchUserWorkers } = useUserStore();
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [search, setSearch] = useState('');
@@ -18,6 +19,8 @@ export default function ManagerProduction() {
     groupMemberIds: [],
   });
   const [selectedMemberId, setSelectedMemberId] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editValues, setEditValues] = useState({ item: '', itemQuantity: '' });
 
   const completionPercentage = selectedProduction && selectedProduction.itemQuantity
     ? Math.round((selectedProduction.finishedQuantity / selectedProduction.itemQuantity) * 100)
@@ -76,11 +79,13 @@ export default function ManagerProduction() {
   });
 
   const handleView = async (row) => {
+    setIsEditMode(false);
     await fetchProductionById(row.taskId);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
+    setIsEditMode(false);
     setIsModalOpen(false);
   };
 
@@ -128,13 +133,51 @@ export default function ManagerProduction() {
 
     const ok = await createProduction(payload);
     if (ok) {
+      toast.success('Production created successfully');
       closeCreateModal();
+    } else {
+      toast.error('Failed to create production');
     }
   };
-  const handleDelete = (row) => {
-    // Implement delete functionality here
-    console.log('Delete production with ID:', row.taskId);
-  }
+  const handleEdit = async (row) => {
+    await fetchProductionById(row.taskId);
+    setEditValues({
+      item: row.item || '',
+      itemQuantity: row.itemQuantity != null ? String(row.itemQuantity) : '',
+    });
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleEditFieldChange = (e) => {
+    const { name, value } = e.target;
+    setEditValues((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateSubmit = async () => {
+    if (!selectedProduction) return;
+
+    const trimmedItem = editValues.item.trim();
+    const quantityNumber = Number(editValues.itemQuantity);
+
+    if (!trimmedItem || Number.isNaN(quantityNumber) || quantityNumber <= 0) {
+      toast.error('Please enter a valid item and quantity');
+      return;
+    }
+
+    const payload = {
+      item: trimmedItem,
+      itemQuantity: quantityNumber,
+    };
+
+    const ok = await patchProduction(selectedProduction.taskId, payload);
+    if (ok) {
+      toast.success('Production updated successfully');
+      setIsEditMode(false);
+    } else {
+      toast.error('Failed to update production');
+    }
+  };
 
   return (
     <div>
@@ -188,7 +231,7 @@ export default function ManagerProduction() {
         ]}
         pageSize={14}
         onView={handleView}
-        onEdit={handleDelete}
+        onEdit={handleEdit}
       />
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -270,23 +313,28 @@ export default function ManagerProduction() {
                   </button>
                 </div>
                 {newProduction.groupMemberIds.length > 0 && (
-                  <div className="p-2 border border-gray-200 rounded max-h-28 overflow-auto">
-                    <ul className="space-y-1 text-xs">
+                  <div className="p-2 overflow-auto border border-gray-200 rounded max-h-28">
+                    <div className="flex flex-wrap gap-2 text-xs">
                       {newProduction.groupMemberIds.map((id) => (
-                        <li key={id} className="flex items-center justify-between">
-                          <span>
-                            {getWorkerNameById(id)} <span className="text-[10px] text-gray-500">(ID: {id})</span>
+                        <div
+                          key={id}
+                          className="flex items-center gap-1 px-2 py-1 border border-blue-200 rounded-full bg-blue-50"
+                        >
+                          <span className="text-blue-800">
+                            {getWorkerNameById(id)}
+                            <span className="ml-1 text-[10px] text-gray-500">(ID: {id})</span>
                           </span>
                           <button
                             type="button"
                             onClick={() => handleRemoveMember(id)}
-                            className="text-[10px] text-red-500 hover:underline"
+                            className="ml-1 text-xs text-red-500 hover:text-red-700"
+                            aria-label="Remove member"
                           >
-                            Remove
+                            ✕
                           </button>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </div>
@@ -336,7 +384,19 @@ export default function ManagerProduction() {
                       </tr>
                       <tr className="bg-white">
                         <td className="px-3 py-2 font-semibold text-blue-800">Item</td>
-                        <td className="px-3 py-2 text-black">{selectedProduction.item}</td>
+                        <td className="px-3 py-2 text-black">
+                          {isEditMode ? (
+                            <input
+                              type="text"
+                              name="item"
+                              value={editValues.item}
+                              onChange={handleEditFieldChange}
+                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                            />
+                          ) : (
+                            selectedProduction.item
+                          )}
+                        </td>
                       </tr>
                       <tr className="bg-blue-50">
                         <td className="px-3 py-2 font-semibold text-blue-800">Group Leader</td>
@@ -357,7 +417,20 @@ export default function ManagerProduction() {
                       </tr>
                       <tr className="bg-blue-50">
                         <td className="px-3 py-2 font-semibold text-blue-800">Quantity</td>
-                        <td className="px-3 py-2 text-black">{selectedProduction.itemQuantity}</td>
+                        <td className="px-3 py-2 text-black">
+                          {isEditMode ? (
+                            <input
+                              type="number"
+                              min="1"
+                              name="itemQuantity"
+                              value={editValues.itemQuantity}
+                              onChange={handleEditFieldChange}
+                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                            />
+                          ) : (
+                            selectedProduction.itemQuantity
+                          )}
+                        </td>
                       </tr>
                       <tr className="bg-white">
                         <td className="px-3 py-2 font-semibold text-blue-800">Completed quantity</td>
@@ -418,6 +491,37 @@ export default function ManagerProduction() {
               </>
             )}
             <div className="flex justify-end mt-6">
+              {selectedProduction && !detailLoading && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isEditMode) {
+                      setEditValues({
+                        item: selectedProduction.item || '',
+                        itemQuantity:
+                          selectedProduction.itemQuantity != null
+                            ? String(selectedProduction.itemQuantity)
+                            : '',
+                      });
+                      setIsEditMode(true);
+                    } else {
+                      setIsEditMode(false);
+                    }
+                  }}
+                  className="px-4 py-2 mr-2 text-sm text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                >
+                  {isEditMode ? 'Cancel edit' : 'Edit'}
+                </button>
+              )}
+              {isEditMode && (
+                <button
+                  type="button"
+                  onClick={handleUpdateSubmit}
+                  className="px-4 py-2 mr-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700"
+                >
+                  Save
+                </button>
+              )}
               <button
                 type="button"
                 onClick={closeModal}

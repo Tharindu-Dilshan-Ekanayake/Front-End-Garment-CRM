@@ -21,8 +21,7 @@ export default function WorkerNav() {
 
       <nav className="flex-1 px-3 py-4 space-y-1">
         <NavLink
-          to="/worker"
-          end
+          to="/worker/production/lead"
           className={({ isActive }) =>
             `${baseLinkClasses} ${
               isActive
@@ -31,11 +30,11 @@ export default function WorkerNav() {
             }`
           }
         >
-          Dashboard
+          Lead Production
         </NavLink>
 
         <NavLink
-          to="/worker/production"
+          to="/worker/production/member"
           className={({ isActive }) =>
             `${baseLinkClasses} ${
               isActive
@@ -44,7 +43,7 @@ export default function WorkerNav() {
             }`
           }
         >
-          Production
+          Member
         </NavLink>
       </nav>
       <div className='px-8'>
