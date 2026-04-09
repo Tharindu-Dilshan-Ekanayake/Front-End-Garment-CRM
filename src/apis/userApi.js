@@ -20,3 +20,8 @@ export const deleteUser = (id) => {
     return axiosInstance.delete(`/users/${id}`);
 }
 
+//get user worker
+export const getUserWorker = () => {
+    return axiosInstance.get('/users/getworker');
+}
+

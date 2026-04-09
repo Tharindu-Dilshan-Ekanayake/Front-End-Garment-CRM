@@ -239,7 +239,7 @@ export default function AdminUserManagement() {
     { header: 'ID', accessor: 'id' },
     { header: 'Name', accessor: 'name' },
     { header: 'Email', accessor: 'email' },
-    { header: 'Position', accessor: 'position' },
+   
     { header: 'Role', accessor: 'role' },
   ]}
   
