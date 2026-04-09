@@ -28,6 +28,8 @@ export default function TableCompo({
   const handleNext = () => {
     setPage((prev) => Math.min(totalPages, prev + 1));
   };
+
+  const hasActions = Boolean(onView || onEdit || onDelete);
   return (
     <div className="overflow-x-auto bg-white rounded-lg">
       <table className="min-w-full text-sm text-left text-gray-700">
@@ -38,9 +40,11 @@ export default function TableCompo({
                 {col.header}
               </th>
             ))}
-            <th scope="col" className="px-4 py-3 text-right">
-              Actions
-            </th>
+            {hasActions && (
+              <th scope="col" className="px-4 py-3 text-right">
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -51,38 +55,48 @@ export default function TableCompo({
             >
               {columns.map((col) => (
                 <td key={col.accessor} className="px-4 py-2">
-                  {row[col.accessor]}
+                  {col.render
+                    ? col.render(row[col.accessor], row)
+                    : row[col.accessor]}
                 </td>
               ))}
-              <td className="px-4 py-2 space-x-2 text-right">
-                <button
-                  type="button"
-                  className="px-2 py-1 text-xs font-semibold text-blue-600 border border-blue-500 rounded hover:bg-blue-50"
-                  onClick={() => onView && onView(row)}
-                >
-                  View
-                </button>
-                <button
-                  type="button"
-                  className="px-2 py-1 text-xs font-semibold text-green-600 border border-green-500 rounded hover:bg-green-50"
-                  onClick={() => onEdit && onEdit(row)}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className="px-2 py-1 text-xs font-semibold text-red-600 border border-red-500 rounded hover:bg-red-50"
-                  onClick={() => onDelete && onDelete(row)}
-                >
-                  Delete
-                </button>
-              </td>
+              {hasActions && (
+                <td className="px-4 py-2 space-x-2 text-right">
+                  {onView && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 text-xs font-semibold text-blue-600 border border-blue-500 rounded hover:bg-blue-50"
+                      onClick={() => onView(row)}
+                    >
+                      View
+                    </button>
+                  )}
+                  {onEdit && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 text-xs font-semibold text-green-600 border border-green-500 rounded hover:bg-green-50"
+                      onClick={() => onEdit(row)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 text-xs font-semibold text-red-600 border border-red-500 rounded hover:bg-red-50"
+                      onClick={() => onDelete(row)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </td>
+              )}
             </tr>
           ))}
           {rowsToRender.length === 0 && (
             <tr>
               <td
-                colSpan={columns.length + 1}
+                colSpan={columns.length + (hasActions ? 1 : 0)}
                 className="px-4 py-4 text-center text-gray-400"
               >
                 No data available

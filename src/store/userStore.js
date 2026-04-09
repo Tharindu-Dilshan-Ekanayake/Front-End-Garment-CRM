@@ -1,9 +1,10 @@
 import { create } from "zustand";
-import { getUsers, getUserById, createUser, deleteUser, patchUser } from "../apis/userApi";
+import { getUsers, getUserById, createUser, deleteUser, patchUser, getUserWorker } from "../apis/userApi";
 
 export const useUserStore = create((set) => ({
 	users: [],
 	user: null,
+	workers: [],
 	listLoading: false,
 	detailLoading: false,
 	error: null,
@@ -107,6 +108,24 @@ export const useUserStore = create((set) => ({
 			return false;
         }
     },
+
+	//get user worker list (for mapping ids to names)
+	fetchUserWorkers: async () => {
+		set({ detailLoading: true, error: null });
+
+		try {
+			const res = await getUserWorker();
+			set({
+				workers: res.data,
+				detailLoading: false
+			});
+		} catch (err) {
+			set({
+				error: "Failed to fetch user worker",
+				detailLoading: false
+			});
+		}
+	},
 
 
 	// optional clear
