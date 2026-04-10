@@ -9,7 +9,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color:  #f3f4f6;
+  /* Background image with lighter overlay so image is more visible */
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.925), rgba(255, 255, 255, 0.863)),
+    url('./Images/bg.webp') no-repeat center center fixed;
+  background-size: cover;
 }
 
 code {
