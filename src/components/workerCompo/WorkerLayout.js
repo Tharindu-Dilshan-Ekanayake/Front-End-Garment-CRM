@@ -4,7 +4,7 @@ import WorkerNav from './WorkerNav'
 
 export default function WorkerLayout() {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen">
       <WorkerNav />
       <main className="flex-1 p-6 overflow-y-auto">
         <Outlet />

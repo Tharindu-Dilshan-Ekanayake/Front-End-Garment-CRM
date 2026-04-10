@@ -27,7 +27,7 @@ export default function InputComponent({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`h-10 px-3 rounded border border-gray-light focus:outline-none focus:border-blue focus:ring-1 focus:ring-blue text-gray-dark ${className}  border-black`}
+        className={`h-11 px-3 rounded-md border border-gray-300 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${className}`}
       />
       {error && (
           <span className="mt-1 text-xs font-medium text-right text-red-500">
