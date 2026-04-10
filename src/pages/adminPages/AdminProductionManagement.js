@@ -3,6 +3,7 @@ import TableCompo from '../../components/TableCompo';
 import { useProductionStore } from '../../store/productionStore';
 import { useUserStore } from '../../store/userStore';
 import { toast } from 'react-hot-toast';
+import HeadText from '../../components/HeadText';
 
 export default function AdminProductionManagement() {
 	const {
@@ -116,8 +117,12 @@ export default function AdminProductionManagement() {
 
 	return (
 		<div>
-			<div className="flex flex-col justify-end gap-3 mb-4 sm:flex-row ">
-				<div className="w-full sm:w-auto">
+			<div className="flex flex-col justify-between gap-3 mb-4 sm:flex-row ">
+				<div>
+					<HeadText label="Production" />
+				</div>
+				<div className="flex items-center gap-3">
+					<div className="w-full sm:w-auto">
 					<input
 						type="text"
 						placeholder="Type item name..."
@@ -138,6 +143,8 @@ export default function AdminProductionManagement() {
 						<option value="COMPLETED">Completed</option>
 					</select>
 				</div>
+				</div>
+				
 			</div>
 
 			<TableCompo

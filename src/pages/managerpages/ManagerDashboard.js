@@ -1,9 +1,12 @@
 import React from 'react'
+import HeadText from '../../components/HeadText'
 
 export default function ManagerDashboard() {
   return (
     <div>
-      <h1 className='mb-4 text-2xl font-bold'>Manager Dashboard</h1>
+      <div className='flex '>
+        <HeadText label="Manager Dashboard" />
+      </div>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import HeadText from '../../components/HeadText'
 
 
 export default function AdminDashboard() {
@@ -6,7 +7,9 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className='mb-4 text-2xl font-bold'>Admin Dashboard</h1>
+      <div className='flex '>
+        <HeadText label="Admin Dashboard" />
+      </div>
       
     </div>
   )

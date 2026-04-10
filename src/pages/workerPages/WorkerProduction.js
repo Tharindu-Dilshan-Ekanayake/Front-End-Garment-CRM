@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useProductionStore } from '../../store/productionStore';
-import { useUserStore } from '../../store/userStore';
-import TableCompo from '../../components/TableCompo';
-import { toast } from 'react-hot-toast';
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useProductionStore } from "../../store/productionStore";
+import { useUserStore } from "../../store/userStore";
+import TableCompo from "../../components/TableCompo";
+import { toast } from "react-hot-toast";
+import HeadText from "../../components/HeadText";
 
 export default function WorkerProduction() {
   const location = useLocation();
-  const isLeaderView = location.pathname.endsWith('/lead');
-  const isMemberView = location.pathname.endsWith('/member');
+  const isLeaderView = location.pathname.endsWith("/lead");
+  const isMemberView = location.pathname.endsWith("/member");
 
   const {
     productions,
@@ -24,8 +25,8 @@ export default function WorkerProduction() {
 
   const { workers, fetchUserWorkers } = useUserStore();
 
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditingAssignments, setIsEditingAssignments] = useState(false);
   const [assignmentEdits, setAssignmentEdits] = useState([]);
@@ -38,43 +39,50 @@ export default function WorkerProduction() {
       fetchMemberTasks();
     }
     fetchUserWorkers();
-  }, [isLeaderView, isMemberView, fetchLeaderTasks, fetchMemberTasks, fetchUserWorkers]);
+  }, [
+    isLeaderView,
+    isMemberView,
+    fetchLeaderTasks,
+    fetchMemberTasks,
+    fetchUserWorkers,
+  ]);
 
   const getStatusMeta = (status) => {
     switch (status) {
-      case 'NOT_STARTED':
+      case "NOT_STARTED":
         return {
-          label: 'Not started',
+          label: "Not started",
           className:
-            'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800',
+            "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800",
         };
-      case 'IN_PROGRESS':
+      case "IN_PROGRESS":
         return {
-          label: 'In progress',
+          label: "In progress",
           className:
-            'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800',
+            "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800",
         };
-      case 'COMPLETED':
+      case "COMPLETED":
         return {
-          label: 'Completed',
+          label: "Completed",
           className:
-            'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800',
+            "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800",
         };
       default:
         return {
-          label: status || 'Unknown',
+          label: status || "Unknown",
           className:
-            'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800',
+            "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800",
         };
     }
   };
 
   const filteredProductions = productions.filter((p) => {
-    const matchesStatus = statusFilter === 'ALL' ? true : p.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "ALL" ? true : p.status === statusFilter;
 
     if (!search.trim()) return matchesStatus;
 
-    const itemText = (p.item || '').toString().toLowerCase();
+    const itemText = (p.item || "").toString().toLowerCase();
     const searchText = search.toLowerCase();
 
     const matchesSearch = itemText.includes(searchText);
@@ -85,7 +93,9 @@ export default function WorkerProduction() {
   const completionPercentage =
     selectedProduction && selectedProduction.itemQuantity
       ? Math.round(
-          (selectedProduction.finishedQuantity / selectedProduction.itemQuantity) * 100,
+          (selectedProduction.finishedQuantity /
+            selectedProduction.itemQuantity) *
+            100,
         )
       : 0;
 
@@ -106,7 +116,11 @@ export default function WorkerProduction() {
   };
 
   const startEditAssignments = () => {
-    if (!selectedProduction || !Array.isArray(selectedProduction.taskAssignments)) return;
+    if (
+      !selectedProduction ||
+      !Array.isArray(selectedProduction.taskAssignments)
+    )
+      return;
     setAssignmentEdits(
       selectedProduction.taskAssignments.map((ta) => ({
         ...ta,
@@ -148,74 +162,74 @@ export default function WorkerProduction() {
     if (allOk) {
       // refresh current production details so UI shows updated values
       await fetchProductionById(selectedProduction.taskId);
-      toast.success('Task assignments updated');
+      toast.success("Task assignments updated");
       setIsEditingAssignments(false);
     } else {
-      toast.error('Failed to update one or more task assignments');
+      toast.error("Failed to update one or more task assignments");
     }
   };
 
   return (
     <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">
-          {isLeaderView ? 'Leader Group Tasks' : 'Member Tasks'}
-        </h2>
-      </div>
-
-      <div className="flex flex-col justify-end gap-3 mb-4 sm:flex-row">
-        <div className="w-full sm:w-auto">
-          <input
-            type="text"
-            placeholder="Type item name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 max-w-sm px-3 py-2 border border-gray-300 rounded"
-          />
+      <div className="flex justify-between">
+        <div className="flex items-center justify-between mb-4">
+         
+          <HeadText label={isLeaderView ? "Leader Group Tasks" : "Member Tasks"} />
         </div>
         <div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full h-10 max-w-sm px-3 py-2 border border-gray-300 rounded"
-          >
-            <option value="ALL">All</option>
-            <option value="NOT_STARTED">Not started</option>
-            <option value="IN_PROGRESS">In progress</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
+          <div className="flex flex-col justify-end gap-3 mb-4 sm:flex-row">
+            <div className="w-full sm:w-auto">
+              <input
+                type="text"
+                placeholder="Type item name..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 max-w-sm px-3 py-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full h-10 max-w-sm px-3 py-2 border border-gray-300 rounded"
+              >
+                <option value="ALL">All</option>
+                <option value="NOT_STARTED">Not started</option>
+                <option value="IN_PROGRESS">In progress</option>
+                <option value="COMPLETED">Completed</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      {error && (
-        <p className="mb-2 text-sm text-red-500">{error}</p>
-      )}
+      {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
 
       {listLoading && productions.length === 0 ? (
         <p className="text-sm text-gray-500">
-          Loading {isLeaderView ? 'leader' : 'member'} tasks...
+          Loading {isLeaderView ? "leader" : "member"} tasks...
         </p>
       ) : productions.length === 0 ? (
         <p className="text-sm text-gray-500">
-          No {isLeaderView ? 'leader' : 'member'} tasks available.
+          No {isLeaderView ? "leader" : "member"} tasks available.
         </p>
       ) : null}
 
       <TableCompo
         data={filteredProductions}
         columns={[
-          { header: 'ID', accessor: 'taskId' },
-          { header: 'Item', accessor: 'item' },
+          { header: "ID", accessor: "taskId" },
+          { header: "Item", accessor: "item" },
           {
-            header: 'Status',
-            accessor: 'status',
+            header: "Status",
+            accessor: "status",
             render: (value) => {
               const meta = getStatusMeta(value);
               return <span className={meta.className}>{meta.label}</span>;
             },
           },
-          { header: 'QNT', accessor: 'itemQuantity' },
-          { header: 'Completed qnt', accessor: 'finishedQuantity' },
+          { header: "QNT", accessor: "itemQuantity" },
+          { header: "Completed qnt", accessor: "finishedQuantity" },
         ]}
         pageSize={10}
         onView={handleView}
@@ -224,7 +238,9 @@ export default function WorkerProduction() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="w-11/12 max-w-4xl p-6 bg-white shadow-2xl md:w-2/3 rounded-xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Production Details</h2>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Production Details
+              </h2>
               <button
                 type="button"
                 onClick={closeModal}
@@ -234,7 +250,9 @@ export default function WorkerProduction() {
               </button>
             </div>
             {detailLoading && !selectedProduction && (
-              <p className="py-6 text-sm text-center text-gray-500">Loading production...</p>
+              <p className="py-6 text-sm text-center text-gray-500">
+                Loading production...
+              </p>
             )}
             {!detailLoading && selectedProduction && (
               <>
@@ -242,41 +260,69 @@ export default function WorkerProduction() {
                   <table className="w-full">
                     <tbody>
                       <tr className="bg-blue-50">
-                        <td className="px-3 py-2 font-semibold text-blue-800">Task ID</td>
-                        <td className="px-3 py-2 text-black">{selectedProduction.taskId}</td>
+                        <td className="px-3 py-2 font-semibold text-blue-800">
+                          Task ID
+                        </td>
+                        <td className="px-3 py-2 text-black">
+                          {selectedProduction.taskId}
+                        </td>
                       </tr>
                       <tr className="bg-white">
-                        <td className="px-3 py-2 font-semibold text-blue-800">Item</td>
-                        <td className="px-3 py-2 text-black">{selectedProduction.item}</td>
+                        <td className="px-3 py-2 font-semibold text-blue-800">
+                          Item
+                        </td>
+                        <td className="px-3 py-2 text-black">
+                          {selectedProduction.item}
+                        </td>
                       </tr>
                       <tr className="bg-blue-50">
-                        <td className="px-3 py-2 font-semibold text-blue-800">Group Leader</td>
+                        <td className="px-3 py-2 font-semibold text-blue-800">
+                          Group Leader
+                        </td>
                         <td className="px-3 py-2 text-black">
-                          {getWorkerNameById(selectedProduction.groupLeaderId)}{' '}
+                          {getWorkerNameById(selectedProduction.groupLeaderId)}{" "}
                           <span className="text-gray-500 text-[10px]">
                             (ID: {selectedProduction.groupLeaderId})
                           </span>
                         </td>
                       </tr>
                       <tr className="bg-white">
-                        <td className="px-3 py-2 font-semibold text-blue-800">Status</td>
+                        <td className="px-3 py-2 font-semibold text-blue-800">
+                          Status
+                        </td>
                         <td className="px-3 py-2">
                           {(() => {
-                            const meta = getStatusMeta(selectedProduction.status);
-                            return <span className={meta.className}>{meta.label}</span>;
+                            const meta = getStatusMeta(
+                              selectedProduction.status,
+                            );
+                            return (
+                              <span className={meta.className}>
+                                {meta.label}
+                              </span>
+                            );
                           })()}
                         </td>
                       </tr>
                       <tr className="bg-blue-50">
-                        <td className="px-3 py-2 font-semibold text-blue-800">Quantity</td>
-                        <td className="px-3 py-2 text-black">{selectedProduction.itemQuantity}</td>
+                        <td className="px-3 py-2 font-semibold text-blue-800">
+                          Quantity
+                        </td>
+                        <td className="px-3 py-2 text-black">
+                          {selectedProduction.itemQuantity}
+                        </td>
                       </tr>
                       <tr className="bg-white">
-                        <td className="px-3 py-2 font-semibold text-blue-800">Completed quantity</td>
-                        <td className="px-3 py-2 text-black">{selectedProduction.finishedQuantity}</td>
+                        <td className="px-3 py-2 font-semibold text-blue-800">
+                          Completed quantity
+                        </td>
+                        <td className="px-3 py-2 text-black">
+                          {selectedProduction.finishedQuantity}
+                        </td>
                       </tr>
                       <tr className="bg-blue-50">
-                        <td className="px-3 py-2 font-semibold text-blue-800">Overall progress</td>
+                        <td className="px-3 py-2 font-semibold text-blue-800">
+                          Overall progress
+                        </td>
                         <td className="px-3 py-2">
                           <div className="flex items-center space-x-2">
                             <div className="flex-1 h-2 overflow-hidden bg-gray-200 rounded-full">
@@ -299,7 +345,9 @@ export default function WorkerProduction() {
                 {Array.isArray(selectedProduction.taskAssignments) &&
                   selectedProduction.taskAssignments.length > 0 && (
                     <div className="mt-6">
-                      <h3 className="mb-2 text-sm font-semibold text-gray-900">Task Assignments</h3>
+                      <h3 className="mb-2 text-sm font-semibold text-gray-900">
+                        Task Assignments
+                      </h3>
                       <div className="overflow-x-auto border border-gray-200 rounded-md">
                         <table className="min-w-full text-xs text-left text-gray-700">
                           <thead className="text-xs text-gray-600 uppercase bg-gray-100">
@@ -311,10 +359,13 @@ export default function WorkerProduction() {
                             </tr>
                           </thead>
                           <tbody>
-                            {(isEditingAssignments ? assignmentEdits : selectedProduction.taskAssignments).map((ta) => (
+                            {(isEditingAssignments
+                              ? assignmentEdits
+                              : selectedProduction.taskAssignments
+                            ).map((ta) => (
                               <tr key={ta.id} className="border-t">
                                 <td className="px-3 py-1">
-                                  {getWorkerNameById(ta.groupMemberId)}{' '}
+                                  {getWorkerNameById(ta.groupMemberId)}{" "}
                                   <span className="text-gray-500 text-[10px]">
                                     (ID: {ta.groupMemberId})
                                   </span>
@@ -325,7 +376,9 @@ export default function WorkerProduction() {
                                       <span className="text-xs text-gray-800">
                                         {ta.baseCompletedQty}
                                       </span>
-                                      <span className="text-xs text-gray-500">+</span>
+                                      <span className="text-xs text-gray-500">
+                                        +
+                                      </span>
                                       <input
                                         type="number"
                                         min="0"
@@ -333,7 +386,7 @@ export default function WorkerProduction() {
                                         onChange={(e) =>
                                           handleAssignmentChange(
                                             ta.id,
-                                            'addCompleted',
+                                            "addCompleted",
                                             e.target.value,
                                           )
                                         }
@@ -350,7 +403,9 @@ export default function WorkerProduction() {
                                       <span className="text-xs text-gray-800">
                                         {ta.baseRejectedQty}
                                       </span>
-                                      <span className="text-xs text-gray-500">+</span>
+                                      <span className="text-xs text-gray-500">
+                                        +
+                                      </span>
                                       <input
                                         type="number"
                                         min="0"
@@ -358,7 +413,7 @@ export default function WorkerProduction() {
                                         onChange={(e) =>
                                           handleAssignmentChange(
                                             ta.id,
-                                            'addRejected',
+                                            "addRejected",
                                             e.target.value,
                                           )
                                         }
@@ -369,9 +424,7 @@ export default function WorkerProduction() {
                                     ta.rejectedQty
                                   )}
                                 </td>
-                                <td className="px-3 py-1">
-                                  {ta.approvedQty}
-                                </td>
+                                <td className="px-3 py-1">{ta.approvedQty}</td>
                               </tr>
                             ))}
                           </tbody>
