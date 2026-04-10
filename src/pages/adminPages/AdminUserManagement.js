@@ -4,6 +4,7 @@ import { useUserStore } from '../../store/userStore'
 import PrimaryButton from '../../components/PrimaryButton';
 import InputComponent from '../../components/InputComponent';
 import { toast } from 'react-hot-toast';
+import HeadText from '../../components/HeadText';
 
 export default function AdminUserManagement() {
   const { users, user, fetchUsers, fetchUserById, clearUser, createUser, deleteUser, patchUser, listLoading,  error } = useUserStore();
@@ -217,19 +218,31 @@ export default function AdminUserManagement() {
 
   return (
     <div >
-      <div className="flex justify-end gap-3 mb-4">
-        <PrimaryButton 
+      <div className="flex justify-between gap-3 mb-4">
+        <div>
+          <HeadText label="User Management" />
+        </div>
+        <div className='flex gap-3'>
+          <div>
+             <PrimaryButton 
           label="Add User"
           color="green"
           onClick={openAddModal}
         />
-        <input
+          </div>
+          <div>
+            <input
           type="text"
           placeholder="Search by name"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full h-10 max-w-sm px-3 py-2 border border-gray-300 rounded"
         />
+          </div>
+         
+        
+        </div>
+        
       </div>
       {listLoading && users.length === 0 && (
         <p className="mb-4 text-sm text-gray-500">Loading users...</p>

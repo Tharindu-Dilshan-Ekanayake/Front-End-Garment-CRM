@@ -4,6 +4,7 @@ import { useProductionStore } from '../../store/productionStore'
 import PrimaryButton from '../../components/PrimaryButton';
 import { useUserStore } from '../../store/userStore';
 import { toast } from 'react-hot-toast';
+import HeadText from '../../components/HeadText';
 
 export default function ManagerProduction() {
   const { productions, selectedProduction, fetchProductions, fetchProductionById, detailLoading, createProduction, patchProduction } = useProductionStore();
@@ -181,8 +182,12 @@ export default function ManagerProduction() {
 
   return (
     <div>
-      <div className="flex flex-col justify-end gap-3 mb-4 sm:flex-row ">
+      <div className="flex flex-col justify-between gap-3 mb-4 sm:flex-row ">
         <div>
+          <HeadText label="Production" />
+        </div>
+        <div className="flex gap-3">
+          <div>
           <PrimaryButton 
             color='green'
             label='Add Production'
@@ -212,6 +217,8 @@ export default function ManagerProduction() {
             <option value="COMPLETED">Completed</option>
           </select>
         </div>
+        </div>
+        
       </div>
       <TableCompo 
         data={filteredProductions}
@@ -508,7 +515,7 @@ export default function ManagerProduction() {
                       setIsEditMode(false);
                     }
                   }}
-                  className="px-4 py-2 mr-2 text-sm text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                  className="px-4 py-2 mr-2 text-sm text-blue-600 rounded-md bg-blue-50 hover:bg-blue-100"
                 >
                   {isEditMode ? 'Cancel edit' : 'Edit'}
                 </button>
